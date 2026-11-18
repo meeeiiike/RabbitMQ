@@ -13,6 +13,7 @@ class OrderRequest(BaseModel):
     order_id: int
     product: str
     quantity: int
+    delivery_method: str
 
 @app.post("/orders", status_code=202)
 async def submit_order(order: OrderRequest):
@@ -26,4 +27,4 @@ async def submit_order(order: OrderRequest):
             delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
         )
         await channel.default_exchange.publish(message, routing_key=queue.name)
-    return {"status": "queued", "order_id": order.order_id}
+    return {"status": "queued", "order_id": order.order_id, "delivery_method": order.delivery_method}
